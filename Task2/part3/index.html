@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini App - To-Do & Gallery</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --card-color: #f0f0f0;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --text-color: #ffffff;
+      --card-color: #2c2c2c;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: 0.3s;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--card-color);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    input, button, textarea {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      background-color: var(--bg-color);
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+
+    .gallery img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mini Frontend App</h1>
+  <button onclick="toggleTheme()">Toggle Theme</button>
+  <div class="container">
+    <!-- To-Do List -->
+    <div class="card">
+      <h2>To-Do List</h2>
+      <input type="text" id="taskInput" placeholder="Enter a task" />
+      <input type="date" id="dateInput" />
+      <button onclick="addTask()">Add Task</button>
+      <ul id="taskList"></ul>
+    </div>
+
+    <!-- Image Gallery -->
+    <div class="card">
+      <h2>Image Gallery</h2>
+      <input type="file" id="imageInput" accept="image/*" />
+      <input type="text" id="captionInput" placeholder="Enter caption" />
+      <button onclick="uploadImage()">Upload Image</button>
+      <div id="gallery" class="gallery"></div>
+    </div>
+  </div>
+
+  <script>
+    // Load tasks from localStorage
+    document.addEventListener("DOMContentLoaded", () => {
+      loadTasks();
+      loadGallery();
+      document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "light");
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const newTheme = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+    }
+
+    function addTask() {
+      const taskText = document.getElementById("taskInput").value;
+      const date = document.getElementById("dateInput").value;
+      if (taskText === "") return;
+
+      const task = { text: taskText, date };
+      const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+      tasks.push(task);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      loadTasks();
+      document.getElementById("taskInput").value = "";
+    }
+
+    function deleteTask(index) {
+      const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+      tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      loadTasks();
+    }
+
+    function loadTasks() {
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+      const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${task.text} (${task.date})`;
+        const btn = document.createElement("button");
+        btn.textContent = "Delete";
+        btn.onclick = () => deleteTask(index);
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    function uploadImage() {
+      const fileInput = document.getElementById("imageInput");
+      const caption = document.getElementById("captionInput").value;
+      const file = fileInput.files[0];
+      if (!file || !caption) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const images = JSON.parse(localStorage.getItem("images") || "[]");
+        images.push({ src: e.target.result, caption });
+        localStorage.setItem("images", JSON.stringify(images));
+        loadGallery();
+        fileInput.value = "";
+        document.getElementById("captionInput").value = "";
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function deleteImage(index) {
+      const images = JSON.parse(localStorage.getItem("images") || "[]");
+      images.splice(index, 1);
+      localStorage.setItem("images", JSON.stringify(images));
+      loadGallery();
+    }
+
+    function loadGallery() {
+      const gallery = document.getElementById("gallery");
+      gallery.innerHTML = "";
+      const images = JSON.parse(localStorage.getItem("images") || "[]");
+      images.forEach((img, index) => {
+        const div = document.createElement("div");
+        const image = document.createElement("img");
+        const caption = document.createElement("p");
+        const btn = document.createElement("button");
+
+        image.src = img.src;
+        caption.textContent = img.caption;
+        btn.textContent = "Delete";
+        btn.onclick = () => deleteImage(index);
+
+        div.appendChild(image);
+        div.appendChild(caption);
+        div.appendChild(btn);
+        gallery.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
