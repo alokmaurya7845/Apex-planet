@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interactive Quiz</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 700px;
+        margin: auto;
+        padding: 20px;
+        background: #f0f2f5;
+      }
+      .question {
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        padding: 20px;
+        box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
+      }
+      .question h3 {
+        margin-top: 0;
+      }
+      .answers {
+        list-style: none;
+        padding-left: 0;
+      }
+      .answers li {
+        background: #e9ecef;
+        margin-bottom: 8px;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      .answers li:hover {
+        background: #d6d8db;
+      }
+      .answers li.correct {
+        background: #c8e6c9; /* light green */
+        color: #256029;
+        font-weight: bold;
+        cursor: default;
+      }
+      .answers li.incorrect {
+        background: #f8d7da; /* light red */
+        color: #842029;
+        font-weight: bold;
+        cursor: default;
+      }
+      .explanation {
+        margin-top: 12px;
+        font-style: italic;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Linux Quiz - Interactive</h1>
+    <div id="quiz">Loading questions...</div>
+
+    <script>
+      const API_KEY = "iNWJCVxN2Y1z7mqnMXDKQrFsY5nwHw8i9vnBZmrJ"; // replace this with your quizapi.io API key
+      const API_URL = `https://quizapi.io/api/v1/questions?apiKey=${API_KEY}&limit=5&category=Linux&difficulty=Easy`;
+
+      async function loadQuestions() {
+        try {
+          const response = await fetch(API_URL);
+          if (!response.ok) throw new Error("Network response was not OK");
+          const questions = await response.json();
+
+          const quizDiv = document.getElementById("quiz");
+          quizDiv.innerHTML = "";
+
+          questions.forEach((q, index) => {
+            const qDiv = document.createElement("div");
+            qDiv.className = "question";
+
+            // Question text
+            const qTitle = document.createElement("h3");
+            qTitle.textContent = `${index + 1}. ${q.question}`;
+            qDiv.appendChild(qTitle);
+
+            // Answers list
+            const ul = document.createElement("ul");
+            ul.className = "answers";
+
+            // Build an array of answer keys for order consistency
+            const answerKeys = Object.keys(q.answers).filter(
+              (key) => q.answers[key] !== null
+            );
+
+            answerKeys.forEach((key) => {
+              const li = document.createElement("li");
+              li.textContent = q.answers[key];
+              li.dataset.key = key; // store which answer this is
+
+              li.addEventListener("click", () => {
+                if (ul.classList.contains("answered")) return; // prevent multiple clicks per question
+
+                ul.classList.add("answered");
+
+                // Mark correct and wrong answers
+                answerKeys.forEach((answerKey) => {
+                  const answerLi = [...ul.children].find(
+                    (el) => el.dataset.key === answerKey
+                  );
+                  const isCorrect =
+                    q.correct_answers[answerKey + "_correct"] === "true";
+
+                  if (isCorrect) {
+                    answerLi.classList.add("correct");
+                  }
+                  if (answerLi === li && !isCorrect) {
+                    answerLi.classList.add("incorrect");
+                  }
+                });
+
+                // Show explanation if available
+                if (q.explanation) {
+                  const expl = document.createElement("div");
+                  expl.className = "explanation";
+                  expl.textContent = "Explanation: " + q.explanation;
+                  qDiv.appendChild(expl);
+                }
+              });
+
+              ul.appendChild(li);
+            });
+
+            qDiv.appendChild(ul);
+            quizDiv.appendChild(qDiv);
+          });
+        } catch (err) {
+          document.getElementById("quiz").textContent =
+            "Failed to load questions: " + err.message;
+          console.error(err);
+        }
+      }
+
+      loadQuestions();
+    </script>
+  </body>
+</html>

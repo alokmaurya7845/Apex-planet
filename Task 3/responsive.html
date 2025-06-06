@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responsive Design</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .demo-box {
+      padding: 2rem;
+      margin: 2rem auto;
+      background: lightblue;
+      max-width: 800px;
+    }
+
+    @media (max-width: 768px) {
+      .demo-box {
+        background: lightgreen;
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .demo-box {
+        background: orange;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Responsive Design Demo</h1>
+    <p>Resize the window to see the background color and font size change based on screen size.</p>
+    <div class="demo-box">
+      This box changes style on mobile, tablet, and desktop using media queries.
+    </div>
+    <button onclick="location.href='index.html'">Back to Home</button>
+  </div>
+</body>
+</html>
