@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive To-Do List</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Optional: Flatpickr for a better date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My To-Do List</h1>
+            <div class="controls-header">
+                <button id="theme-switcher">🌙</button>
+                 <input type="text" id="search-bar" placeholder="Search tasks...">
+            </div>
+        </header>
+
+        <div class="input-area">
+            <input type="text" id="task-input" placeholder="Add a new task...">
+            <input type="text" id="due-date-input" placeholder="Due Date (YYYY-MM-DD)">
+            <select id="category-input">
+                <option value="Personal">Personal</option>
+                <option value="Work">Work</option>
+                <option value="Urgent">Urgent</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+            </select>
+            <select id="priority-input">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+            
+                <option value="High">High</option>
+            </select>
+            <button id="add-task-btn">Add Task</button>
+        </div>
+
+        <div class="filter-area">
+            <span>Filter by Category:</span>
+            <select id="category-filter">
+                <option value="All">All</option>
+                <option value="Personal">Personal</option>
+                <option value="Work">Work</option>
+                <option value="Urgent">Urgent</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <ul id="task-list">
+            <!-- Tasks will be dynamically added here -->
+        </ul>
+
+        <footer>
+            <p id="progress-bar">0 of 0 tasks completed.</p>
+            <button id="export-json-btn">Export JSON</button>
+            <button id="export-csv-btn">Export CSV</button>
+        </footer>
+    </div>
+
+    <!-- Modal for editing tasks -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">×</span>
+            <h2>Edit Task</h2>
+            <input type="text" id="edit-task-text" placeholder="Task description">
+            <input type="text" id="edit-due-date" placeholder="Due Date (YYYY-MM-DD)">
+            <select id="edit-category">
+                <option value="Personal">Personal</option>
+                <option value="Work">Work</option>
+                <option value="Urgent">Urgent</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+            </select>
+            <select id="edit-priority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+            <button id="save-edit-btn">Save Changes</button>
+        </div>
+    </div>
+    
+    <audio id="complete-sound" src="assets/complete.mp3" preload="auto"></audio> <!-- Add a short sound file -->
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="script.js"></script>
+</body>
+</html>
